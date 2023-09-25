@@ -37,6 +37,16 @@ const verifyEmail = async (email, token) => {
     { isEmailVerified: true },
     { new: true }
   );
+  await authModel.deleteOne({ email });
 };
 
-module.exports = { create, login, verifyEmail };
+const reGenerateToken = async (email) => {
+  //check email exists
+  const user = await authModel.findOne({ email });
+  if (!user) throw new Error("No user found");
+  const token = generateOTP();
+  await authModel.findOneAndUpdate({ email }, { token: token }, { new: true });
+  await mailer(email, token);
+  return true;
+};
+module.exports = { create, login, verifyEmail, reGenerateToken };

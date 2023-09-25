@@ -29,4 +29,14 @@ router.post("/verify", async (req, res, next) => {
     next(error);
   }
 });
+router.post("/regenerate", async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email) throw new Error("Email missing");
+    const result = await Controller.reGenerateToken(email);
+    res.json({ data: result, msg: "token regeneration success" });
+  } catch (error) {
+    next(error);
+  }
+});
 module.exports = router;
