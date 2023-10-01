@@ -39,4 +39,16 @@ router.post("/regenerate", async (req, res, next) => {
     next(error);
   }
 });
+router.post("/forget-password", async (req, res, next) => {
+  console.log("forrrrrrrrrr");
+  try {
+    const { email, token, password } = req.body;
+    if (!email || !token || !password)
+      throw new Error("Email,token or password missing");
+    const result = await Controller.forgetPassword(email, token, password);
+    res.json({ data: result, msg: "forget password success" });
+  } catch (error) {
+    next(error);
+  }
+});
 module.exports = router;

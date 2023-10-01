@@ -3,6 +3,7 @@ const userModel = require("../users/user.model");
 const authModel = require("./auth.model");
 const { generateOTP, verifyOTP } = require("../../utils/otp");
 const { mailer } = require("../../services/mail");
+const { generateJWT } = require("../../utils/jwt");
 
 const create = async (payload) => {
   const { password, ...rest } = payload;
@@ -12,14 +13,15 @@ const create = async (payload) => {
   await mailer(payload.email, token);
   return userModel.create(rest);
 };
+
 const login = async (email, password) => {
-  const user = await userModel.findOne({ email });
+  const user = await userModel.findOne({ email, isArchived: false });
   if (!user) throw new Error("User not found");
   if (!user.isActive) throw new Error("User not activated, contact admin");
   if (!user.isEmailVerified) throw new Error("User not verified");
   const isValid = await bcrypt.compare(password, user.password);
   if (!isValid) throw new Error("Incorrect email or password");
-  return true;
+  return generateJWT(user);
 };
 
 const verifyEmail = async (email, token) => {
@@ -49,4 +51,22 @@ const reGenerateToken = async (email) => {
   await mailer(email, token);
   return true;
 };
-module.exports = { create, login, verifyEmail, reGenerateToken };
+
+const forgetPassword = async (email, token, password) => {
+  const user = await userModel.findOne({ email, isArchived: false });
+  if (!user) throw new Error("User not found");
+  if (!user.isActive) throw new Error("User not activated, contact admin");
+  if (!user.isEmailVerified) throw new Error("User not verified");
+  const isValid = verifyOTP(token);
+  if (!isValidToken) throw new Error("Invalid token");
+  const hashPassword = await bcrypt.hash(password, +process.env.SALT_ROUNDS);
+  await userModel.findOneAndUpdate({ email }, hashPassword, { new: true });
+  return true;
+};
+module.exports = {
+  create,
+  forgetPassword,
+  login,
+  verifyEmail,
+  reGenerateToken,
+};
