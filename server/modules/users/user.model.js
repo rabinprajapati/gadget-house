@@ -23,6 +23,7 @@ const userSchema = new Schema({
     ],
   },
   isActive: { type: Boolean, default: true },
+  isArchived: { type: Boolean, default: false },
   isEmailVerified: { type: Boolean, default: false },
   ...commonSchema,
 });
