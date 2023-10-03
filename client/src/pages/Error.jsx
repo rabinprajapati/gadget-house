@@ -7,7 +7,9 @@ const Error = () => {
           <p className="fs-3">
             <span className="text-danger">Opps!</span> Page not found.
           </p>
-          <p className="lead">The page you’re looking for doesn’t exist.</p>
+          <p className="lead">
+            The page you&apos;re looking for doesn&apos;t exist.
+          </p>
           <a href="/" className="btn btn-primary">
             Go Home
           </a>
