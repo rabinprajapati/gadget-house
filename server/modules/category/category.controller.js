@@ -1,3 +1,4 @@
+const productModel = require("../products/product.model");
 const Model = require("./category.model");
 
 const slugGenerator = (payload) => {
@@ -21,6 +22,12 @@ const updateById = (id, payload) => {
   return Model.findOneAndUpdate({ _id: id }, payload, { new: true });
 };
 const remove = (id) => {
+  const product = productModel.findOne({ category: id });
+  if (product) {
+    throw new Error(
+      `Remove category form product name ${product.name} to continue`
+    );
+  }
   return Model.deleteOne({ _id: id });
 };
 
