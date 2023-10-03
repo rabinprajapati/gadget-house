@@ -1,8 +1,35 @@
 const Model = require("./user.model");
 const bcrypt = require("bcryptjs");
 
-const list = () => {
-  return Model.find();
+const list = (page = 1, limit = 10, search) => {
+  // return Model.find();
+  return Model.aggregate([
+    {
+      $match: {},
+    },
+    {
+      $sort: {
+        created_at: -1,
+      },
+    },
+    {
+      $facet: {
+        metadata: [
+          {
+            $count: "total",
+          },
+        ],
+        data: [
+          {
+            $skip: (page - 1) * limit,
+          },
+          {
+            $limit: limit,
+          },
+        ],
+      },
+    },
+  ]);
 };
 
 const findById = (id) => {

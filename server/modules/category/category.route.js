@@ -12,6 +12,7 @@ router.get("/", async (req, res, next) => {
 
 router.post("/", async (req, res, next) => {
   try {
+    req.body.created_by = req.currentUser;
     const result = await Controller.create(req.body);
     res.json({ data: result, msg: "success" });
   } catch (error) {
@@ -28,6 +29,7 @@ router.get("/:id", async (req, res, next) => {
 });
 router.put("/:id", async (req, res, next) => {
   try {
+    req.body.updated_by = req.currentUser;
     const result = await Controller.updateById(req.params.id, req.body);
     res.json({ data: result, msg: "success" });
   } catch (error) {
